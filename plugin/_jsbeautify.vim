@@ -1,7 +1,7 @@
 if &cp || exists("loaded__jsbeautify")
     finish
 endif
-let loaded__jsbeautify = 2.2
+let loaded__jsbeautify = 2.3
 
 
 
@@ -61,8 +61,21 @@ endfunction
 
 function! s:remove_indent() " if the last item of output (stringArray) is indent string, remove it.
 	if len(s:output)>0 && s:output[len(s:output) -1] == s:indent_string
+		"unlet s:output[-1]
 		call remove(s:output, -1)
 	endif
+endfunction
+
+function! s:remove_last_indent()
+	let i = len(s:output)
+	while i >= 0
+		let i -= 1
+		if s:output[i] == s:indent_string
+			"call remove(s:output, i)
+			unlet s:output[i]
+			break
+		endif
+	endwhile
 endfunction
 
 function! s:set_mode(mode) " push last mode into modes and update current mode.
@@ -146,14 +159,47 @@ function! s:get_next_token() " return next array of string and type. the string 
 		return [c, "TK_WORD"]
 	endif
 	if c == "(" || c == "["
+		call s:indent()
 		return [c, "TK_START_EXPR"]
 	endif
-
+	if c == "(" " prepare for next version
+		return [c,"TK_START_PARENTHESIS"]
+	endif
+	if c == "[" " prepare for next change
+		return [c,"TK_START_BRACKET"]
+	endif
 	if c == ")" || c == "]"
+		call s:unindent()
+		if c == "]" "for deindent the line ] is in
+			let i = len(s:output)
+			let ignore = 0 " if there's a [ match ], ignore the deindent
+			while i >= 0
+				let i -= 1
+				if s:output[i] == "["
+					let ignore += 1
+				elseif s:output[i] == "]"
+					let ignore -= 1
+				elseif s:output[i] == s:indent_string
+					"call remove(s:output, i)
+					unlet s:output[i]
+					break
+				endif
+				if ignore == 1
+					break
+				endif
+			endwhile
+			"call s:remove_last_indent()
+		endif
 		return [c, "TK_END_EXPR"]
 	endif
+	if c == ")" " prepare for next version
+		return [c, "TK_END_PARENTHESIS"]
+	endif
+	if c == "]" " prepare for nextversion
+		return [c,"TK_END_BRACKET"]
+	endif
 
-	if c == "{"
+	if c == "{" "BRACE
 		return [c, "TK_START_BLOCK"]
 	endif
 
@@ -291,6 +337,10 @@ function! s:is_js()
 	return expand("%:e") == "js"
 endfunction
 
+function! s:currentMode()
+	return mode()
+endfunction
+
 "function! g:_Jsbeautify(js_source_text, options)
 function! g:_Jsbeautify()
 	if !s:is_js()
@@ -367,6 +417,7 @@ function! g:_Jsbeautify()
 				call s:print_token()
 
 			elseif s:token_type == "TK_END_EXPR"
+				"call s:remove_last_indent()
 				call s:print_token()
 				call s:restore_mode()
 			elseif s:token_type == "TK_START_BLOCK"
@@ -647,3 +698,4 @@ function! g:_Jsbeautify()
 endfunction
 
 nnoremap <silent> <leader>_ff :call g:_Jsbeautify()<cr>
+vmap <F4> :call g:_Jsbeautify()<cr>
