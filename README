@@ -57,7 +57,25 @@ var initRoleMutexGroupGrid = function() {
         }, RMGGridRowClick); //  There won be a newline after } , when it's in an Expression.
 }
 ⇱ END
-
+in versino 2.3+
+⇲
+        	var a = [[[{
+						a: 'a'
+					}, {
+						A: 'A'
+				}], {
+					b: 'b'
+					,B: 'B'
+			}], [{
+					c: 'c'
+				}, {
+					C: 'C'
+			}], {
+				d: 'd'
+			}, {
+				D: 'D'
+		}]
+⇱ END
 
 
 This vim-script also works at a low performance:)  
