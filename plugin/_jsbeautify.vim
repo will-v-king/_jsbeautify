@@ -1,7 +1,7 @@
 if &cp || exists("loaded__jsbeautify")
     finish
 endif
-let loaded__jsbeautify = 2.3
+let loaded__jsbeautify = 2.3.1
 
 
 
@@ -159,18 +159,21 @@ function! s:get_next_token() " return next array of string and type. the string 
 		return [c, "TK_WORD"]
 	endif
 	if c == "(" || c == "["
-		call s:indent()
+		if c == "["
+			call s:indent()
+		endif
 		return [c, "TK_START_EXPR"]
 	endif
 	if c == "(" " prepare for next version
 		return [c,"TK_START_PARENTHESIS"]
 	endif
 	if c == "[" " prepare for next change
+		all s:indent()
 		return [c,"TK_START_BRACKET"]
 	endif
 	if c == ")" || c == "]"
-		call s:unindent()
 		if c == "]" "for deindent the line ] is in
+			call s:unindent()
 			let i = len(s:output)
 			let ignore = 0 " if there's a [ match ], ignore the deindent
 			while i >= 0
@@ -196,6 +199,25 @@ function! s:get_next_token() " return next array of string and type. the string 
 		return [c, "TK_END_PARENTHESIS"]
 	endif
 	if c == "]" " prepare for nextversion
+		"for deindent the line ] is in
+		call s:unindent()
+		let i = len(s:output)
+		let ignore = 0 " if there's a [ match ], ignore the deindent
+		while i >= 0
+			let i -= 1
+			if s:output[i] == "["
+				let ignore += 1
+			elseif s:output[i] == "]"
+				let ignore -= 1
+			elseif s:output[i] == s:indent_string
+				"call remove(s:output, i)
+				unlet s:output[i]
+				break
+			endif
+			if ignore == 1
+				break
+			endif
+		endwhile
 		return [c,"TK_END_BRACKET"]
 	endif
 
