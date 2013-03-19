@@ -76,7 +76,33 @@ in versino 2.3+
 			}, {
 				D: 'D'
 		}]
-⇱ END
+⇱
+also good for indent fold method:
+before 2.3
+⇲
+var a = {
+	columns:[{
+		field:'A'
+		,label:'A'
+	}, {
+		field:'B'
+		,label:'B'
+	}]
+}
+⇱
+in version 2.3+
+⇲
+var a = {
+	columns:[{
+			field:'A'
+			,label:'A'
+		}, {
+			field:'B'
+			,label:'B'
+	}]
+}
+⇱
+END
 
 
 This vim-script also works at a low performance:)  
