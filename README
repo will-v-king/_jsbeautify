@@ -2,8 +2,8 @@ This is a mirror of http://www.vim.org/scripts/script.php?script_id=4063
 
 Another plugin to format your JavaScript source code
 
-I modified the jsbeautify.vim as I need. (Original jsbeautify.vim is here: http://www.vim.org/scripts/script.php?script_id=2727 ) (changes happened on lines 1, 4, 532, 534, 538, 540 and 503)
-
+I modified the jsbeautify.vim as I need. (Original jsbeautify.vim is here: http://www.vim.org/scripts/script.php?script_id=2727 ) (changes happened on lines 1, 4, 532, 534, 538, 540 and 503（version 2.1）)
+in version 2.1+
 
 {
         a: 'a',
@@ -57,6 +57,7 @@ var initRoleMutexGroupGrid = function() {
         }, RMGGridRowClick); //  There won be a newline after } , when it's in an Expression.
 }
 ⇱ END
+------------------------------
 in versino 2.3+
 ⇲
         	var a = [[[{
